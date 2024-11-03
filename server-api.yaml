@@ -1,0 +1,216 @@
+openapi: "3.0.3"
+info:
+  title: "server API"
+  description: "server API"
+  version: "1.0.0"
+servers:
+  - url: "https://server"
+paths:
+  /auth/login:
+    post:
+      summary: "POST auth/login"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LoginResponseDto"
+  /auth/register:
+    post:
+      summary: "POST auth/register"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+  /message/conversations:
+    post:
+      summary: "POST message/conversations"
+      operationId: "sendMessage"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+    get:
+      summary: "GET message/conversations"
+      operationId: "getConversations"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConversationsDto"
+  /message/rooms/join/{uuid}:
+    post:
+      summary: "POST message/rooms/join/{uuid}"
+      operationId: "joinRoom"
+      parameters:
+        - name: "uuid"
+          in: "path"
+          required: false
+        - name: "uuid"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+  /message/rooms/{uuid}:
+    post:
+      summary: "POST message/rooms/{uuid}"
+      operationId: "sendMessageToRoom"
+      parameters:
+        - name: "uuid"
+          in: "path"
+          required: false
+        - name: "uuid"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+    get:
+      summary: "GET message/rooms/{uuid}"
+      operationId: "getRoomMessages"
+      parameters:
+        - name: "uuid"
+          in: "path"
+          required: false
+        - name: "uuid"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+  /message/conversations/{participant}:
+    get:
+      summary: "GET message/conversations/{participant}"
+      operationId: "getConversationMessages"
+      parameters:
+        - name: "participant"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessagesDto"
+  /message/rooms:
+    get:
+      summary: "GET message/rooms"
+      operationId: "getRooms"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "integer"
+                  format: "int32"
+components:
+  schemas:
+    LoginRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    LoginResponseDto:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+    RegisterRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    User:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+          format: "uuid"
+        username:
+          type: "string"
+        password:
+          type: "string"
+    SendMessageDto:
+      type: "object"
+      properties:
+        content:
+          type: "string"
+        receiver:
+          type: "string"
+    ConversationsDto:
+      type: "object"
+      properties:
+        conversations:
+          type: "array"
+          items:
+            type: "string"
+    MessageDto:
+      type: "object"
+      properties:
+        content:
+          type: "string"
+        sender:
+          type: "string"
+        receiver:
+          type: "string"
+        timestamp:
+          type: "integer"
+          format: "int64"
+    MessagesDto:
+      type: "object"
+      properties:
+        messages:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MessageDto"
