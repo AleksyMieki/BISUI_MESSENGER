@@ -1,0 +1,159 @@
+openapi: "3.0.3"
+info:
+  title: "server API"
+  description: "server API"
+  version: "1.1.0"
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /auth/login:
+    post:
+      summary: "logowanie"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LoginResponseDto"
+  /auth/register:
+    post:
+      summary: "rejestracja"
+      operationId: "register"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /message/conversations:
+    post:
+      summary: "wysyłanie wiadomości"
+      operationId: "sendMessage"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+    get:
+      summary: "konwersacje użytkownika, tj. z kim ma co najmniej jedną wiadomość"
+      operationId: "getConversations"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConversationsDto"
+  /message/conversations/{participant}:
+    get:
+      summary: "konwersacje z danym użytkownikiem"
+      operationId: "getConversationMessages"
+      parameters:
+        - name: "participant"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessagesDto"
+  /users:
+    get:
+      summary: "użytkownicy zarejestrowani"
+      operationId: "getUsers"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UsersDto"
+components:
+  schemas:
+    LoginRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    LoginResponseDto:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+    RegisterRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+        "n":
+          type: "string"
+        e:
+          type: "string"
+    SendMessageDto:
+      type: "object"
+      properties:
+        content:
+          type: "string"
+        receiver:
+          type: "string"
+    ConversationsDto:
+      type: "object"
+      properties:
+        conversations:
+          type: "array"
+          items:
+            type: "string"
+    MessageDto:
+      type: "object"
+      properties:
+        content:
+          type: "string"
+        sender:
+          type: "string"
+        receiver:
+          type: "string"
+        timestamp:
+          type: "integer"
+          format: "int64"
+    MessagesDto:
+      type: "object"
+      properties:
+        messages:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MessageDto"
+    UserDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+    UsersDto:
+      type: "object"
+      properties:
+        users:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/UserDto"
